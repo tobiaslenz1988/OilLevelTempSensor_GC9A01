@@ -131,7 +131,7 @@ static uint16_t                         cntRawArr[4];
 static uint16_t                         returnArray[4];
 bool TempToggle                         = false;
 bool TimeoutSensorDetected              = true;
-char SoftwareVersion[]                  = "Y003";       
+      
 portMUX_TYPE timerMux                   = portMUX_INITIALIZER_UNLOCKED;
 char  Modulename[]                      = "OilSensor";
 bool NewData                            = false;
@@ -144,7 +144,7 @@ uint16_t OldOilLevelCompValues[]        = {Old_sensor_OilLevelEmpty,Old_sensor_O
 uint16_t NewOilTempCompValues[]         = {New_sensor_Temperature_30,New_sensor_Temperature_40,New_sensor_Temperature_50,New_sensor_Temperature_55,New_sensor_Temperature_60,New_sensor_Temperature_65,New_sensor_Temperature_70,New_sensor_Temperature_75,New_sensor_Temperature_80,New_sensor_Temperature_85,New_sensor_Temperature_90,New_sensor_Temperature_95,New_sensor_Temperature_100,New_sensor_Temperature_105,New_sensor_Temperature_110,New_sensor_Temperature_115};
 uint16_t NewOilLevelCompValues[]        = {New_sensor_OilLevelEmpty,New_sensor_OilLevel_10,New_sensor_OilLevel_20,New_sensor_OilLevel_30,New_sensor_OilLevel_40,New_sensor_OilLevel_50,New_sensor_OilLevel_60,New_sensor_OilLevel_70,New_sensor_OilLevel_80,New_sensor_OilLevel_90,New_sensor_OilLevelFull};
 
-
+#define SOFTWAREVERSION               "Y004"
 #define EEPROMNameSpace               "my_variables"
 #define SignalInputPin                2
 #define ISRDebugTogglePin             4
@@ -163,6 +163,7 @@ uint16_t NewOilLevelCompValues[]        = {New_sensor_OilLevelEmpty,New_sensor_O
 #define OFFSET_IMAGE_Y                42 
 
 uint8_t BT_rx_buffer[Buffersize];
+char SoftwareVersion[]                  = SOFTWAREVERSION;
     
 //Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 //Adafruit_GC9A01A tft(17, 18,19,15,16,23);
@@ -571,6 +572,8 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
 
       /* This part should change the SW Version*/
       /* 0x2E 0xF1 0xAB 0x04 0x!!  0x!! 0x!! 0x!! */
+
+      /*
       if((receive_BT_Array[1]==0xF1) && (receive_BT_Array[2]==0xAB))
       {
         if(receive_BT_Array[3]==0x04)
@@ -601,7 +604,7 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
           SerialBT.write(UDS_NRC_incorrectMessageLengthOrInvalidFormat);
         }
       }else
-
+      */
 
       /* This part should change the name of the BT Module*/
       /* 0x2E 0xF1 0x05 0x?? 0x!!  0x!! 0x!! 0x!!......*/
@@ -955,17 +958,17 @@ void showOilLevelAtDisplay(uint8_t percentageOillevel,bool initflag)
         tft.setTextSize(4);
         tft.setCursor(85, 105);
         tft.print(oilTemperature);
-        tft.setCursor(128, 85);
+        tft.setCursor(132, 85);
         tft.print(char(248));
-        tft.setCursor(153, 105);
+        tft.setCursor(165, 105);
         tft.print("C");
       }else{
         tft.setTextSize(4);
         tft.setCursor(85, 105);
         tft.print(oilTemperature);
-        tft.setCursor(145, 85);
+        tft.setCursor(155, 85);
         tft.print(char(248));
-        tft.setCursor(153, 105);
+        tft.setCursor(175, 105);
         tft.print("C");
       }
 
@@ -985,12 +988,12 @@ void showOilLevelAtDisplay(uint8_t percentageOillevel,bool initflag)
         tft.setCursor(67, 185);
         tft.print("MIN");
 
-        tft.setTextSize(3);
+        tft.setTextSize(4);
         /* Position of Text "Check" measured from the Top left corner (0,0) in Pixel */
-        tft.setCursor(80, 100);
-        tft.print("CHECK");
-        tft.setCursor(98, 120);
-        tft.print("OIL");
+        tft.setCursor(80, 90);
+        tft.print("Check");
+        tft.setCursor(98, 130);
+        tft.print("Oil");
         if(toggleInvertDisplayFlag== false)
         {
           toggleInvertDisplayFlag = true;
@@ -1005,11 +1008,11 @@ void showOilLevelAtDisplay(uint8_t percentageOillevel,bool initflag)
     }
   }else{
         /* timeout detected*/
-        tft.setTextSize(2);
+        tft.setTextSize(4);
         /* Position of Text "Check" measured from the Top left corner (0,0) in Pixel */
-        tft.setCursor(80, 60);
+        tft.setCursor(55, 65);
         tft.print("Sensor");
-        tft.setCursor(110, 120);
+        tft.setCursor(100, 130);
         tft.print("OL");
         
         if(toggleInvertDisplayFlag == false)
@@ -1076,9 +1079,13 @@ void readEepromValues()
   session             = preferences.getUChar("session",UDS_Session_Control_Default_Session);
   NewOilSensorEquipped  = preferences.getBool("NewSensorflag",false);
 
-  String temp = preferences.getString("SW_Version","1234");
-  uint8_t leng = temp.length() +1;
+  String temp;
+  uint8_t leng;
+ /*
+  temp = preferences.getString("SW_Version","1234");
+  leng = temp.length() +1;
   temp.toCharArray(SoftwareVersion, leng);
+  */
 
   temp = preferences.getString("Modulename","Sensor");
   leng = temp.length() +1;
