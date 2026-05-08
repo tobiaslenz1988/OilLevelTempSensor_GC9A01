@@ -122,7 +122,7 @@ uint8_t oilLevelPercentage              = OilLevelPercentageInitValue; /*init va
 uint8_t testValue_oilTemperature        = 85; /* Debugvalue 255 */
 uint8_t testValue_oilLevelPercentage    = 60; /* Debugvalue 255 */
 uint8_t oldOilTemp                      = 0;
-uint8_t oldOilLevel                      = 0;
+uint8_t oldOilLevel                     = 0;
 uint32_t startUpCounter                 = 0;
 uint8_t brand                           = 0;
 uint8_t startingsequence[]              = {0,50,100,50,0};
@@ -172,10 +172,6 @@ char SoftwareVersion[]                  = SOFTWAREVERSION;
 Adafruit_GC9A01A::Adafruit_GC9A01A(int8_t cs, int8_t dc, int8_t DIN/SDA,
                                    int8_t sclk, int8_t rst, int8_t miso)
 */
-
-
-
-
 
 
 
@@ -299,7 +295,6 @@ void delete_BT_buffer()
     BT_rx_buffer[z]=0xFF;  
   }
 }
-
 
 
 void sendInfosToBT(uint8_t temperature, uint8_t OilLevel,uint16_t outputarr[]) {
@@ -894,8 +889,6 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
             preferences.end();
           }
           SerialBT.write(0x50);
-          SerialBT.write(UDS_Session_Control);
-
       }else{
         SerialBT.write(0x7F);
         SerialBT.write(UDS_Session_Control);
