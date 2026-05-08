@@ -1069,7 +1069,7 @@ void readEepromValues()
   preferences.clear();
   preferences.begin(EEPROMNameSpace, false);
     
-  session             = preferences.getUChar("session",UDS_Session_Control_Default_Session);
+  session               = preferences.getUChar("session",UDS_Session_Control_Default_Session);
   NewOilSensorEquipped  = preferences.getBool("NewSensorflag",false);
 
   String temp;
