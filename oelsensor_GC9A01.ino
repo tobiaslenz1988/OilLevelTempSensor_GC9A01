@@ -76,34 +76,43 @@ T1   T2   T3    T4                  T5                    T1
 #include <Preferences.h>
 #include <stdio.h>
 #include <string.h>
-#include <Arduino.h>
 
 #include <SPI.h>
-//#include <Adafruit_GFX.h>
-#include "Adafruit_GC9A01A.h"
+#include <TFT_eSPI.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_GC9A01A.h>
+
+
 #include "oilsensor.h"
 #include "NRC_UDS_protocol.h"
-
-#include "Oil_LevelGraphic_GCA901_240_240/_0percent_inv.h"
-#include "Oil_LevelGraphic_GCA901_240_240/_10percent_inv.h"
-#include "Oil_LevelGraphic_GCA901_240_240/_20percent_inv.h"
-#include "Oil_LevelGraphic_GCA901_240_240/_30percent_inv.h"
-#include "Oil_LevelGraphic_GCA901_240_240/_40percent_inv.h"
-#include "Oil_LevelGraphic_GCA901_240_240/_50percent_inv.h"
-#include "Oil_LevelGraphic_GCA901_240_240/_60percent_inv.h"
-#include "Oil_LevelGraphic_GCA901_240_240/_70percent_inv.h"
-#include "Oil_LevelGraphic_GCA901_240_240/_80percent_inv.h"
-#include "Oil_LevelGraphic_GCA901_240_240/_90percent_inv.h"
-#include "Oil_LevelGraphic_GCA901_240_240/_100percent_inv.h"
+#include "Oil_LevelGraphic_GCA901_240_240/_0percent_inv8.h"
+#include "Oil_LevelGraphic_GCA901_240_240/_10percent_inv8.h"
+#include "Oil_LevelGraphic_GCA901_240_240/_20percent_inv8.h"
+#include "Oil_LevelGraphic_GCA901_240_240/_30percent_inv8.h"
+#include "Oil_LevelGraphic_GCA901_240_240/_40percent_inv8.h"
+#include "Oil_LevelGraphic_GCA901_240_240/_50percent_inv8.h"
+#include "Oil_LevelGraphic_GCA901_240_240/_60percent_inv8.h"
+#include "Oil_LevelGraphic_GCA901_240_240/_70percent_inv8.h"
+#include "Oil_LevelGraphic_GCA901_240_240/_80percent_inv8.h"
+#include "Oil_LevelGraphic_GCA901_240_240/_90percent_inv8.h"
+#include "Oil_LevelGraphic_GCA901_240_240/_100percent_inv8.h"
+#include "logos/brand_defines.h"
 #include "oilsensorled.h"
-
+#include "logos/audi_alt_1.h"
+#include "logos/audi_alt_2.h"
+#include "logos/vw.h"
 Preferences preferences;
 BluetoothSerial SerialBT;
+
+
+TFT_eSPI tft = TFT_eSPI();
+
+
 bool Impuls_1_High                      = false;
 bool Impuls_1_Low                       = false;
 bool Impuls_2_High                      = false;
 bool Impuls_2_Low                       = false;
-bool debugFlag                          = false;
+uint8_t session                         = UDS_Session_Control_Default_Session;
 bool NewOilSensorEquipped               = false;
 bool toggleflag                         = false;
 uint8_t signalinput                     = 0;
@@ -112,8 +121,10 @@ uint8_t oilTemperature                  = OilTemperaturePercentageInitValue; /*i
 uint8_t oilLevelPercentage              = OilLevelPercentageInitValue; /*init value 254*/
 uint8_t testValue_oilTemperature        = 85; /* Debugvalue 255 */
 uint8_t testValue_oilLevelPercentage    = 60; /* Debugvalue 255 */
-
-uint8_t sequenceCounter                 = 0;
+uint8_t oldOilTemp                      = 0;
+uint8_t oldOilLevel                      = 0;
+uint32_t startUpCounter                 = 0;
+uint8_t brand                           = 0;
 uint8_t startingsequence[]              = {0,50,100,50,0};
 hw_timer_t *timer                       = NULL;
 static uint16_t                         cntRawArr[4];
@@ -137,8 +148,8 @@ uint16_t NewOilLevelCompValues[]        = {New_sensor_OilLevelEmpty,New_sensor_O
 #define EEPROMNameSpace               "my_variables"
 #define SignalInputPin                2
 #define ISRDebugTogglePin             4
+#define OutputPin                     28
 
-#define OutputPin                     14
 #define timerfrequency                1000000
 #define ISRfrequency                  1000
 #define TimeoutSignalMS               1500
@@ -150,13 +161,22 @@ uint16_t NewOilLevelCompValues[]        = {New_sensor_OilLevelEmpty,New_sensor_O
 /* Because the Display is round we need an offset*/
 #define OFFSET_IMAGE_X                42
 #define OFFSET_IMAGE_Y                42 
-#define TFT_DC 20
-#define TFT_CS 17 
-#define TFT_RS 16
-uint8_t BT_rx_buffer[Buffersize];
 
+uint8_t BT_rx_buffer[Buffersize];
+    
 //Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
-Adafruit_GC9A01A tft(TFT_CS, TFT_DC,TFT_RS);
+//Adafruit_GC9A01A tft(17, 18,19,15,16,23);
+
+/*
+Adafruit_GC9A01A::Adafruit_GC9A01A(int8_t cs, int8_t dc, int8_t DIN/SDA,
+                                   int8_t sclk, int8_t rst, int8_t miso)
+*/
+
+
+
+
+
+
 
 void ARDUINO_ISR_ATTR onTimer() {
   /* This toggle is for debug purpose only.. */
@@ -282,7 +302,7 @@ void delete_BT_buffer()
 
 
 void sendInfosToBT(uint8_t temperature, uint8_t OilLevel,uint16_t outputarr[]) {
-  if (debugFlag == true)
+  if (session == UDS_Session_Control_Development_Session)
   {
     uint8_t i;
     //Serial.write(0xFF);
@@ -307,15 +327,18 @@ void sendInfosToBT(uint8_t temperature, uint8_t OilLevel,uint16_t outputarr[]) {
     SerialBT.print("Softwareversion");
     String stri = SoftwareVersion;
     SerialBT.println(stri);
+  
     SerialBT.print("Sensor TO detected: ");
     SerialBT.println(TimeoutSensorDetected);
-    SerialBT.print("SequenceCounter");
-    SerialBT.println(sequenceCounter);
+    SerialBT.print("startUpCounter");
+    SerialBT.println(startUpCounter);
+ 
+    SerialBT.print("Temperature: ");
+    SerialBT.println(temperature);
+    SerialBT.print("OilLevel: ");
+    SerialBT.println(OilLevel);
+    delay(1000);
   }
-  SerialBT.print("Temperature: ");
-  SerialBT.println(temperature);
-  SerialBT.print("OilLevel: ");
-  SerialBT.println(OilLevel);
 }
 
 
@@ -346,7 +369,7 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         SerialBT.write(posResponse);
         SerialBT.write(0xF1);
         SerialBT.write(0x87); 
-        SerialBT.write(debugFlag);
+        SerialBT.write(session);
       }else
 
       /* 0x22 0xF1 0x05 */
@@ -520,8 +543,19 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
           tempvar = (NewOilLevelCompValues[i] & 0xFF);
           SerialBT.write(tempvar);
         } 
-        
-      }else
+      }
+      else
+
+      /* 0x22 0x06 0x0A */
+      /* get the Brandvalue */
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x0A))
+      {
+        SerialBT.write(posResponse);
+        SerialBT.write(0x06);
+        SerialBT.write(0x0A);                  
+        SerialBT.write(brand);
+      }
+      else
       {
         SerialBT.write(0x7F);
         SerialBT.write(UDS_READ_DATA_BY_IDENTIFIER);
@@ -819,8 +853,23 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         SerialBT.write(posResponse);
         SerialBT.write(0x06);
         SerialBT.write(0x09); 
-      }else
-      
+      }
+      else /* This part should set brand for the startuplogo
+      /* 0x2E 0x06 0x0A 0x!! */
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x0A))
+      {
+
+        preferences.begin(EEPROMNameSpace, false); 
+        uint8_t temp =  (uint8_t) receive_BT_Array[3];
+        brand = temp;
+        preferences.putUChar("Brand",temp);
+        preferences.end();
+        
+        SerialBT.write(posResponse);
+        SerialBT.write(0x06);
+        SerialBT.write(0x0A); 
+      }
+      else
       {
         SerialBT.write(0x7F);
         SerialBT.write(UDS_WRITE_DATA_BY_IDENTIFIER);
@@ -831,26 +880,19 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
     /* Session Control */
     if(receive_BT_Array[0] == UDS_Session_Control)
     {
-      if(receive_BT_Array[1] == UDS_Session_Control_Default_Session)
+      if((receive_BT_Array[1] == UDS_Session_Control_Default_Session)||(receive_BT_Array[1] == UDS_Session_Control_Extended_Session)||(receive_BT_Array[1] == UDS_Session_Control_Development_Session))
       {
           
-          if(debugFlag != false)
+          if(session != receive_BT_Array[1])
           {
-            debugFlag = false;
+            session = receive_BT_Array[1];
             preferences.begin(EEPROMNameSpace, false); 
-            preferences.putBool("debugflag",false);
+            preferences.putUChar("session",receive_BT_Array[1]);
             preferences.end();
           }
-          
-      } else if(receive_BT_Array[1] == UDS_Session_Control_Extended_Session)
-      {
-          if(debugFlag != true)
-          {
-            debugFlag = true;
-            preferences.begin(EEPROMNameSpace, false); 
-            preferences.putBool("debugflag",true);
-            preferences.end();
-          }
+          SerialBT.write(0x50);
+          SerialBT.write(UDS_Session_Control);
+
       }else{
         SerialBT.write(0x7F);
         SerialBT.write(UDS_Session_Control);
@@ -878,71 +920,91 @@ void getBTData(const uint8_t *buffer, size_t size)
 
 void showOilLevelAtDisplay(uint8_t percentageOillevel,bool initflag)
 {
-  if((TimeoutSensorDetected == false) || ((TimeoutSensorDetected == true) && (debugFlag == true)) )
+  if((oldOilLevel!=oilLevelPercentage) || (oldOilTemp != oilTemperature))
+  {
+     tft.fillScreen(GC9A01A_BLACK);
+     tft.setTextColor(GC9A01A_WHITE);
+  }
+  if((TimeoutSensorDetected == false) || ( ((TimeoutSensorDetected == true) && (session == UDS_Session_Control_Extended_Session)) || ((TimeoutSensorDetected == true) && (session == UDS_Session_Control_Development_Session))) )
   {  
-      //if(percentageOillevel == 00){tft.drawRGBBitmap(0, 0, image_OilLevel_00, 128, 64, 1);} else
-      //if(percentageOillevel == 10){ tft.drawRGBBitmap(0, 0, image_OilLevel_10, 128, 64, 1);} else
+      //if(percentageOillevel == 00){tft.drawBitmap(0, 0, image_OilLevel_00, 128, 64, 1);} else
+      //if(percentageOillevel == 10){ tft.drawBitmap(0, 0, image_OilLevel_10, 128, 64, 1);} else
     /* Oillevel Ok */
     if(percentageOillevel >= 20){
+        tft.invertDisplay(true);
       /* Design Reason Background is Dark all Text is White*/
-      if(percentageOillevel == 20){tft.drawRGBBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_20, IMAGE_WIDTH, IMAGE_HEIGHT);} else
-      if(percentageOillevel == 30){tft.drawRGBBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_30, IMAGE_WIDTH, IMAGE_HEIGHT);} else
-      if(percentageOillevel == 40){tft.drawRGBBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_40, IMAGE_WIDTH, IMAGE_HEIGHT);} else
-      if(percentageOillevel == 50){tft.drawRGBBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_50, IMAGE_WIDTH, IMAGE_HEIGHT);} else
-      if(percentageOillevel == 60){tft.drawRGBBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_60, IMAGE_WIDTH, IMAGE_HEIGHT);} else
-      if(percentageOillevel == 70){tft.drawRGBBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_70, IMAGE_WIDTH, IMAGE_HEIGHT);} else
-      if(percentageOillevel == 80){tft.drawRGBBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_80, IMAGE_WIDTH, IMAGE_HEIGHT);} else
-      if(percentageOillevel == 90){tft.drawRGBBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_90, IMAGE_WIDTH, IMAGE_HEIGHT);} else
-      if(percentageOillevel == 100){tft.drawRGBBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_100, IMAGE_WIDTH, IMAGE_HEIGHT);} 
-
-      tft.setTextSize(1);
+      if(percentageOillevel == 20){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_20, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
+      if(percentageOillevel == 30){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_30, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
+      if(percentageOillevel == 40){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_40, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
+      if(percentageOillevel == 50){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_50, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
+      if(percentageOillevel == 60){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_60, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
+      if(percentageOillevel == 70){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_70, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
+      if(percentageOillevel == 80){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_80, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
+      if(percentageOillevel == 90){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_90, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
+      if(percentageOillevel == 100){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_100, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} 
+      tft.setTextSize(2);
     
-      tft.setCursor(65, 42);
+      tft.setCursor(67, 37);
       tft.print("MAX");
 
-      tft.setCursor(65, 192);
+      tft.setCursor(67, 185);
       tft.print("MIN");
 
-      tft.setTextSize(3);
-      tft.setCursor(37, 22);
-      tft.print(oilTemperature);
-      //tft.print(char(248));
+      if(oilTemperature<100)
+      {
+        tft.setTextSize(4);
+        tft.setCursor(85, 105);
+        tft.print(oilTemperature);
+        tft.setCursor(128, 85);
+        tft.print(char(248));
+        tft.setCursor(153, 105);
+        tft.print("C");
+      }else{
+        tft.setTextSize(4);
+        tft.setCursor(85, 105);
+        tft.print(oilTemperature);
+        tft.setCursor(145, 85);
+        tft.print(char(248));
+        tft.setCursor(153, 105);
+        tft.print("C");
+      }
+
 
     }else{
-      
       if(initflag==false)
       {
          /* Oillevel not Ok */
-        if(percentageOillevel == 00){ tft.drawRGBBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_00, IMAGE_WIDTH, IMAGE_HEIGHT);} else
-        if(percentageOillevel == 10){ tft.drawRGBBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_10, IMAGE_WIDTH, IMAGE_HEIGHT);} 
-        tft.fillScreen(GC9A01A_BLACK);
+        if(percentageOillevel == 00){ tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_00, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
+        if(percentageOillevel == 10){ tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_10, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} 
         tft.setTextColor(GC9A01A_WHITE);
-        tft.setTextSize(1);
+        tft.setTextSize(2);
       
-        tft.setCursor(53, 25);
+        tft.setCursor(67, 37);
         tft.print("MAX");
-
-        tft.setCursor(53, 216);
+        
+        tft.setCursor(67, 185);
         tft.print("MIN");
 
-        tft.setTextSize(2);
+        tft.setTextSize(3);
         /* Position of Text "Check" measured from the Top left corner (0,0) in Pixel */
-        tft.setCursor(53, 13);
+        tft.setCursor(80, 100);
         tft.print("CHECK");
-        tft.setCursor(63, 31);
+        tft.setCursor(98, 120);
         tft.print("OIL");
         if(toggleInvertDisplayFlag== false)
         {
           toggleInvertDisplayFlag = true;
           tft.invertDisplay(true);
+          delay(1000);
         }else{
           toggleInvertDisplayFlag = false;
           tft.invertDisplay(false);
+          delay(1000);
         }
       }
     }
   }else{
-
+        /* timeout detected*/
         tft.setTextSize(2);
         /* Position of Text "Check" measured from the Top left corner (0,0) in Pixel */
         tft.setCursor(80, 60);
@@ -954,38 +1016,64 @@ void showOilLevelAtDisplay(uint8_t percentageOillevel,bool initflag)
         {
           toggleInvertDisplayFlag = true;
           tft.invertDisplay(true);
+          delay(1000);
         }else{
           toggleInvertDisplayFlag = false;
           tft.invertDisplay(false);
+          delay(1000);
         }
   }
 }
 
 void controlOfDisplay()
 {
-  if ((sequenceCounter>=8) && (sequenceCounter<=15) )
+  //tft.fillScreen(GC9A01A_BLACK);
+  if ((startUpCounter>=40) && (startUpCounter<=1500) )
   {
+    if(startUpCounter==40){
+      tft.fillScreen(GC9A01A_BLACK);
+      tft.setTextColor(GC9A01A_WHITE);
+      startUpCounter = startUpCounter+1;
+    }
     showOilLevelAtDisplay(oilLevelPercentage,false);
   } 
   /* short initialization sequence*/
-  if((sequenceCounter>=3) && (sequenceCounter<=7))
-  {
-    showOilLevelAtDisplay(startingsequence[sequenceCounter-3],true);
-    sequenceCounter = sequenceCounter+1;
-  }
-  /* perform a short Delay*/
-  if((sequenceCounter<3))
-  {
-    sequenceCounter = sequenceCounter+1;
+  if((startUpCounter>=0) && (startUpCounter<40))
+  {  
+    //tft.drawXBitmap(0, 50, audi_logo, logoWidth, logoHeight,GC9A01A_BLACK,GC9A01A_WHITE);
+    //tft.drawXBitmap(0, 0, vw_logo, logoWidth, logoHeight,GC9A01A_BLUE,GC9A01A_WHITE);
+    showBrandLogo(brand);
+    startUpCounter = startUpCounter+1;
   }
 }
+void showBrandLogo(uint8_t brandvalue)
+{
+  if(brandvalue == BRAND_VW){
+    tft.drawXBitmap(0, 0, vw_logo, vwlogoWidth, vwlogoHeight,GC9A01A_BLUE,GC9A01A_WHITE);
+  }else if(brandvalue == BRAND_AUDI_ALT){
+    tft.drawXBitmap(0, 60, audi_alt_1, audi_logo_alt_1_Width, audi_logo_alt_1_Height,GC9A01A_WHITE,GC9A01A_BLACK);
+    tft.drawXBitmap(0, 160, audi_alt_2, audi_logo_alt_2_Width, audi_logo_alt_2_Height,GC9A01A_RED,GC9A01A_BLACK);
+  }else if(brandvalue == BRAND_AUDI_NEU){
+      tft.drawXBitmap(0, 60, audi_alt_1, audi_logo_alt_1_Width, audi_logo_alt_1_Height,GC9A01A_WHITE,GC9A01A_BLACK);
+
+  }else if(brandvalue == BRAND_NISSAN_Skyline){
+
+  }else if(brandvalue == BRAND_NISSAN_GTT){
+   
+  }else if(brandvalue == BRAND_CHEVY){
+
+  }else if(brandvalue == BRAND_Init){
+
+  }
+}
+
 
 void readEepromValues()
 {
   preferences.clear();
   preferences.begin(EEPROMNameSpace, false);
     
-  debugFlag             = preferences.getBool("debugflag",false);
+  session             = preferences.getUChar("session",UDS_Session_Control_Default_Session);
   NewOilSensorEquipped  = preferences.getBool("NewSensorflag",false);
 
   String temp = preferences.getString("SW_Version","1234");
@@ -1054,6 +1142,8 @@ void readEepromValues()
   NewOilLevelCompValues[9] = preferences.getUShort("New_sensor_OilLevel_90",New_sensor_OilLevel_90);
   NewOilLevelCompValues[10] = preferences.getUShort("New_sensor_OilLevelFull",New_sensor_OilLevelFull);
 
+  
+  brand = preferences.getUChar("Brand",BRAND_VW);
   preferences.end();
 }
 
@@ -1061,9 +1151,11 @@ void readEepromValues()
 
 void setup() {
   readEepromValues();
-  tft.begin();
+  tft.init();
 
-  delay(1000);
+  tft.initDMA();
+  //tft.initSPI();
+  delay(300);
   //start serial connection
   SerialBT.begin(Modulename);
   
@@ -1094,22 +1186,25 @@ void setup() {
 
   SerialBT.onData(getBTData);
   /* Design Reason Background is Dark all Text is White*/
+  
   tft.fillScreen(GC9A01A_BLACK);
   tft.setTextColor(GC9A01A_WHITE);
-  tft.setRotation(0);
 
 }
 
 
 void loop() {
-  portENTER_CRITICAL(&timerMux);
+  //portENTER_CRITICAL(&timerMux);
   orderImpulse(cntRawArr);
-  portEXIT_CRITICAL(&timerMux);
+  //portEXIT_CRITICAL(&timerMux);
 
-  convertImpulseToPercentage(returnArray[1], returnArray[3],debugFlag);
+  convertImpulseToPercentage(returnArray[1], returnArray[3],session);
   sendInfosToBT(oilTemperature, oilLevelPercentage,returnArray);
   //TempToggle = showLevelAndTempAtLED(TempToggle,oilLevelPercentage,oilTemperature);
   analyse_BT_Protocol(BT_rx_buffer);
+ 
   controlOfDisplay();
-  delay(1000);
+  oldOilTemp = oilTemperature;
+  oldOilLevel = oilLevelPercentage;
+  delay(10);
   }
