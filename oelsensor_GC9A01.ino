@@ -79,8 +79,8 @@ T1   T2   T3    T4                  T5                    T1
 
 #include <SPI.h>
 #include <TFT_eSPI.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_GC9A01A.h>
+//#include <Adafruit_GFX.h>
+//#include <Adafruit_GC9A01A.h>
 
 
 #include "oilsensor.h"
@@ -161,7 +161,10 @@ uint16_t NewOilLevelCompValues[]        = {New_sensor_OilLevelEmpty,New_sensor_O
 /* Because the Display is round we need an offset*/
 #define OFFSET_IMAGE_X                42
 #define OFFSET_IMAGE_Y                42 
-
+#define GC9A01A_BLACK                 0x0000
+#define GC9A01A_WHITE                 0xFFFF
+#define GC9A01A_RED                   0xF800
+#define GC9A01A_BLUE                  0x001F
 uint8_t BT_rx_buffer[Buffersize];
 char SoftwareVersion[]                  = SOFTWAREVERSION;
     
@@ -929,7 +932,7 @@ void showOilLevelAtDisplay(uint8_t percentageOillevel,bool initflag)
     if(percentageOillevel >= 20){
         tft.invertDisplay(true);
       /* Design Reason Background is Dark all Text is White*/
-      if(percentageOillevel == 20){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_20, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
+      if(percentageOillevel == 20){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_20, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_RED);} else
       if(percentageOillevel == 30){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_30, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
       if(percentageOillevel == 40){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_40, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
       if(percentageOillevel == 50){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_50, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
@@ -939,23 +942,27 @@ void showOilLevelAtDisplay(uint8_t percentageOillevel,bool initflag)
       if(percentageOillevel == 90){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_90, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
       if(percentageOillevel == 100){tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_100, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} 
       tft.setTextSize(2);
-    
+      
+      tft.setTextColor(GC9A01A_WHITE);
       tft.setCursor(67, 37);
       tft.print("MAX");
 
+      tft.setTextColor(GC9A01A_WHITE);
       tft.setCursor(67, 185);
       tft.print("MIN");
 
       if(oilTemperature<100)
       {
+        tft.setTextColor(GC9A01A_WHITE);
         tft.setTextSize(4);
         tft.setCursor(85, 105);
         tft.print(oilTemperature);
-        tft.setCursor(132, 85);
+        tft.setCursor(145, 85);
         tft.print(char(248));
         tft.setCursor(165, 105);
         tft.print("C");
       }else{
+        tft.setTextColor(GC9A01A_RED);
         tft.setTextSize(4);
         tft.setCursor(85, 105);
         tft.print(oilTemperature);
@@ -970,8 +977,8 @@ void showOilLevelAtDisplay(uint8_t percentageOillevel,bool initflag)
       if(initflag==false)
       {
          /* Oillevel not Ok */
-        if(percentageOillevel == 00){ tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_00, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} else
-        if(percentageOillevel == 10){ tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_10, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_WHITE);} 
+        if(percentageOillevel == 00){ tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_00, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_RED);} else
+        if(percentageOillevel == 10){ tft.drawBitmap(OFFSET_IMAGE_X, OFFSET_IMAGE_Y, image_OilLevel_10, IMAGE_WIDTH, IMAGE_HEIGHT,GC9A01A_RED);} 
         tft.setTextColor(GC9A01A_WHITE);
         tft.setTextSize(2);
       
@@ -1050,7 +1057,7 @@ void showBrandLogo(uint8_t brandvalue)
     tft.drawXBitmap(0, 60, audi_alt_1, audi_logo_alt_1_Width, audi_logo_alt_1_Height,GC9A01A_WHITE,GC9A01A_BLACK);
     tft.drawXBitmap(0, 160, audi_alt_2, audi_logo_alt_2_Width, audi_logo_alt_2_Height,GC9A01A_RED,GC9A01A_BLACK);
   }else if(brandvalue == BRAND_AUDI_NEU){
-      tft.drawXBitmap(0, 60, audi_alt_1, audi_logo_alt_1_Width, audi_logo_alt_1_Height,GC9A01A_WHITE,GC9A01A_BLACK);
+    tft.drawXBitmap(0, 60, audi_alt_1, audi_logo_alt_1_Width, audi_logo_alt_1_Height,GC9A01A_WHITE,GC9A01A_BLACK);
 
   }else if(brandvalue == BRAND_NISSAN_Skyline){
 
@@ -1189,7 +1196,6 @@ void setup() {
   
   tft.fillScreen(GC9A01A_BLACK);
   tft.setTextColor(GC9A01A_WHITE);
-
 }
 
 
