@@ -84,12 +84,18 @@ The Services 0x22 (ReadDataByIdentifier): has the following Subfunctions
 - 0x22 0xF1 0xAB                            Read SW-Version                     (Returns the SW Version)
 - 0x22 0xF1 0x86                            Read Session                        (Returns  the actucal Session is on (true) or not (false))
 - 0x22 0xF1 0x97                            Read Systemname                     (Returns the SystemName of the Module)
-- 0x22 0x06 0x00 0x??                       Read DebugOilTemperature            Returns the Value of the OilLevel in Degree Celsius which is used in Debugmode
-- 0x22 0x06 0x01 0x??                       Read DebugOilLevelPercentage        Returns the Value of the OilLevel in percent which is used in Debugmode
-- 0x22 0x06 0x02 0x??                       Read Extra OutputPin                Returns the Status if the extra outputpin is active or not
-- 0x22 0x06 0x03 0x??                       Read New Old SensorFlag             Returns the flag of new or old sensor is equipped (true/0x01 -> New Sensor, false/0x00 -> Oldsensor)
-- 0x22 0x06 0x04 0x??                       Read Real Oil Tempeature            Returns the value of Oiltemperature in Degree celsius which is used from the SW at the Moment
-- 0x22 0x06 0x05 0x??                       Read Real Oil Level                 Returns the value of OilLevel in Percent which is used from the SW at the Moment
+- 0x22 0x06 0x00                            Read DebugOilTemperature            Returns the Value of the OilLevel in Degree Celsius which is used in Debugmode
+- 0x22 0x06 0x01                            Read DebugOilLevelPercentage        Returns the Value of the OilLevel in percent which is used in Debugmode
+- 0x22 0x06 0x02                            Read Real Oil Tempeature            Returns the value of Oiltemperature in Degree celsius which is used from the SW at the Moment
+- 0x22 0x06 0x03                            Read Real Oil Level                 Returns the value of OilLevel in Percent which is used from the SW at the Moment
+
+
+  
+- 0x22 0x06 0x0A                            Read the Brand                      Returns the Brand
+- 0x22 0x06 0x0B                            Read Extra OutputPin                Returns the Status if the extra outputpin is active or not
+- 0x22 0x06 0x0C                            Read New Old SensorFlag             Returns the flag of new or old sensor is equipped (true/0x01 -> New Sensor, false/0x00 -> Oldsensor)
+
+  
 - 0x22 0x06 0x06 0x??                       Read the OilTempCompareValues       Returns an array of 2*8bytes * N of Compare impulsevalues for old Sensor, which are used to compare the measured impulses for Temperature with this values.. starting from Oiltempeatur 30°C...Pay attention the values are uint16_t byte[3] (highbyte) byte[4](lowbyte) tempersture30...
 - 0x22 0x06 0x07 0x??                       Read the OilLevelCompareValues      Returns an array of 2*8bytes * N of Compare impulsevalues for old Sensor, which are used to compare the measured impulses for OilLevel with this values..... starting from Oillevel empty...Pay attention the values are uint16_t byte[3] (highbyte) byte[4](lowbyte) oillevel empty...
 - 0x22 0x06 0x08 0x??                       Read the OilTempCompareValues       Returns an array of 2*8bytes * N of Compare impulsevalues for new Sensor, which are used to compare the measured impulses for Temperature with this values.. starting from Oiltempeatur 30°C...Pay attention the values are uint16_t byte[3] (highbyte) byte[4](lowbyte) tempersture30...
