@@ -570,7 +570,6 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
 
     
 
-
     /*Command to write something*/
     if(receive_BT_Array[0] == UDS_WRITE_DATA_BY_IDENTIFIER)
     {
@@ -648,7 +647,8 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
           SerialBT.write(UDS_WRITE_DATA_BY_IDENTIFIER);
           SerialBT.write(UDS_NRC_incorrectMessageLengthOrInvalidFormat);
         }
-      }else
+      }
+      else
 
       /* This part should set the Debugvalue for the OilTemperature
       /* 0x2E 0x06 0x00 0x??......*/
@@ -670,39 +670,10 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         SerialBT.write(0x01); 
       }else
 
-      /* This part should set the value of an Output Pin
-      /* 0x2E 0x06 0x02 0x!! 0x!!  0x!! 0x!! 0x!!......*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x02))
-      {
-        statusOfExtraOutputPin = receive_BT_Array[3];
-        digitalWrite(OutputPin, statusOfExtraOutputPin);
-        SerialBT.write(posResponse);
-        SerialBT.write(0x06);
-        SerialBT.write(0x02); 
-      }else
-
-      /* This part should set the old sensor new sensor flag
-      /* 0x2E 0x06 0x03 0x!!......*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x03))
-      {
-
-        bool temp = (bool)receive_BT_Array[3];
-        if(NewOilSensorEquipped != temp)
-        {
-          NewOilSensorEquipped = temp;
-          preferences.begin(EEPROMNameSpace, false); 
-          preferences.putBool("NewSensorflag",temp);
-          preferences.end();
-        }
-
-        SerialBT.write(posResponse);
-        SerialBT.write(0x06);
-        SerialBT.write(0x03); 
-      }else
 
       /* This part should set the compare values for OilTemperature of old Sensor
-      /* 0x2E 0x06 0x06 0x!! 0x!!  0x!! 0x!! 0x!!......*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x06))
+      /* 0x2E 0x06 0x04 0x!! 0x!!  0x!! 0x!! 0x!!......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x04))
       {
 
         preferences.begin(EEPROMNameSpace, false); 
@@ -744,11 +715,11 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
 
         SerialBT.write(posResponse);
         SerialBT.write(0x06);
-        SerialBT.write(0x06); 
+        SerialBT.write(0x04); 
       }else
        /* This part should set the compare values for Oillevel old sensor
-      /* 0x2E 0x06 0x07 0x!! 0x!!  0x!! 0x!! 0x!!......*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x07))
+      /* 0x2E 0x06 0x05 0x!! 0x!!  0x!! 0x!! 0x!!......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x05))
       {
 
         preferences.begin(EEPROMNameSpace, false); 
@@ -779,12 +750,12 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
 
         SerialBT.write(posResponse);
         SerialBT.write(0x06);
-        SerialBT.write(0x07); 
+        SerialBT.write(0x05); 
       }else
 
       /* This part should set the compare values for Oiltemperatur New sensor
-      /* 0x2E 0x06 0x08 0x!! 0x!!  0x!! 0x!! 0x!!......*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x08))
+      /* 0x2E 0x06 0x06 0x!! 0x!!  0x!! 0x!! 0x!!......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x06))
       {
 
         preferences.begin(EEPROMNameSpace, false); 
@@ -826,12 +797,12 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
 
         SerialBT.write(posResponse);
         SerialBT.write(0x06);
-        SerialBT.write(0x08); 
+        SerialBT.write(0x06); 
       }else
 
       /* This part should set the compare values for Oillevel new sensor
-      /* 0x2E 0x06 0x09 0x!! 0x!!  0x!! 0x!! 0x!!......*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x09))
+      /* 0x2E 0x06 0x07 0x!! 0x!!  0x!! 0x!! 0x!!......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x07))
       {
 
         preferences.begin(EEPROMNameSpace, false); 
@@ -861,9 +832,10 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         
         SerialBT.write(posResponse);
         SerialBT.write(0x06);
-        SerialBT.write(0x09); 
+        SerialBT.write(0x07); 
       }
-      else /* This part should set brand for the startuplogo
+      else 
+      /* This part should set brand for the startuplogo
       /* 0x2E 0x06 0x0A 0x!! */
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x0A))
       {
@@ -879,6 +851,40 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         SerialBT.write(0x0A); 
       }
       else
+      
+      /* This part should set the value of an Output Pin
+      /* 0x2E 0x06 0x0B 0x!! 0x!!  0x!! 0x!! 0x!!......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x0B))
+      {
+        statusOfExtraOutputPin = receive_BT_Array[3];
+        digitalWrite(OutputPin, statusOfExtraOutputPin);
+        SerialBT.write(posResponse);
+        SerialBT.write(0x06);
+        SerialBT.write(0x0B); 
+      }
+      else
+
+
+      /* This part should set the old sensor new sensor flag
+      /* 0x2E 0x06 0x0C 0x!!......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x0C))
+      {
+
+        bool temp = (bool)receive_BT_Array[3];
+        if(NewOilSensorEquipped != temp)
+        {
+          NewOilSensorEquipped = temp;
+          preferences.begin(EEPROMNameSpace, false); 
+          preferences.putBool("NewSensorflag",temp);
+          preferences.end();
+        }
+
+        SerialBT.write(posResponse);
+        SerialBT.write(0x06);
+        SerialBT.write(0x0C); 
+      }else
+
+
       {
         SerialBT.write(0x7F);
         SerialBT.write(UDS_WRITE_DATA_BY_IDENTIFIER);
