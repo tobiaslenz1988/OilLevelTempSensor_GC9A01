@@ -82,8 +82,8 @@ There are the Services:
 The Services 0x22 (ReadDataByIdentifier): has the following Subfunctions
 
 - 0x22 0xF1 0xAB                            Read SW-Version                     (Returns the SW Version)
-- 0x22 0xF1 0x87                            Read Debugflag                      (Returns if the Debug is on (true) or not (false))
-- 0x22 0xF1 0x05                            Read Modulename                     (Returns the Name of the Module)
+- 0x22 0xF1 0x86                            Read Session                        (Returns  the actucal Session is on (true) or not (false))
+- 0x22 0xF1 0x97                            Read Systemname                     (Returns the SystemName of the Module)
 - 0x22 0x06 0x00 0x??                       Read DebugOilTemperature            Returns the Value of the OilLevel in Degree Celsius which is used in Debugmode
 - 0x22 0x06 0x01 0x??                       Read DebugOilLevelPercentage        Returns the Value of the OilLevel in percent which is used in Debugmode
 - 0x22 0x06 0x02 0x??                       Read Extra OutputPin                Returns the Status if the extra outputpin is active or not
@@ -99,7 +99,7 @@ The Services 0x22 (ReadDataByIdentifier): has the following Subfunctions
 The Services 0x2E (WriteDataByIdentifier): has the following Subfunctions
 
 - 0x2E 0xF1 0xAB 0x04   0x'' 0x'' 0x'' 0x'' Write SW-Version                     You can write the sw Version... is always 4 ASCIIs therefore the fourth Byte (Byte[3)) has to be always 0x04
-- 0x2E 0xF1 0x05 0xlen  0x'' ..             Write to ModuleName (max.15 chars)   You can write the Modulename... the foruth byte (BYTE[3] consits the length (max. 15)
+- 0x2E 0xF1 0x97 0xlen  0x'' ..             Write to ModuleName (max.15 chars)   You can write the Modulename... the foruth byte (BYTE[3] consits the length (max. 15)
 - 0x2E 0x06 0x00 0x??                       Write DebugOilTemperature            You can write the DebugValue of OilTemperature... 
 - 0x2E 0x06 0x01 0x??                       Write DebugOilLevelPercentage        You can write the DebugValue of OilLevelPercentage ... 
 - 0x2E 0x06 0x02 0x??                       Write Extra OutputPin                Set The extra Outpin to the desired value 
@@ -112,9 +112,9 @@ The Services 0x2E (WriteDataByIdentifier): has the following Subfunctions
 
 
 0x10 (SessionControl):
-0x10 0x00 (Set Session to Default Session-> Debug Off, no extra Information Output to Bluetooth)
-0x10 0x03 (Set Session to Extended Session-> Debug On, Information output Output to Bluetooth)
-
+0x10 0x01 (Set Session to Default Session-> Debug Off, no extra Information Output to Bluetooth)
+0x10 0x03 (Set Session to Extended Session-> Debug On, no additional information printed out)
+0x10 0x03 (Set Session to Developmenz Session-> Debug On, additional information printed out)
 
 The Values of the Graphics were converted woth the tool LCS ASsistent from https://en.radzio.dxp.pl/bitmap_converter/
 
