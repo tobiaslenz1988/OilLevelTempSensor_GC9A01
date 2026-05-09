@@ -361,13 +361,13 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         SerialBT.write(SoftwareVersion[3]);
       }else
 
-      /* 0x22 0xF1 0x87 */
-      /* Get Debug Flag */
-      if((receive_BT_Array[1]==0xF1) && (receive_BT_Array[2]==0x87))
+      /* 0x22 0xF1 0x86 */
+      /* Get actual Sesion */
+      if((receive_BT_Array[1]==0xF1) && (receive_BT_Array[2]==0x86))
       {
         SerialBT.write(posResponse);
         SerialBT.write(0xF1);
-        SerialBT.write(0x87); 
+        SerialBT.write(0x86); 
         SerialBT.write(session);
       }else
 
@@ -955,20 +955,20 @@ void showOilLevelAtDisplay(uint8_t percentageOillevel,bool initflag)
       {
         tft.setTextColor(GC9A01A_WHITE);
         tft.setTextSize(4);
-        tft.setCursor(85, 105);
+        tft.setCursor(105, 105);
         tft.print(oilTemperature);
-        tft.setCursor(145, 85);
+        tft.setCursor(165, 85);
         tft.print(char(248));
-        tft.setCursor(165, 105);
+        tft.setCursor(180, 105);
         tft.print("C");
       }else{
         tft.setTextColor(GC9A01A_RED);
         tft.setTextSize(4);
-        tft.setCursor(85, 105);
+        tft.setCursor(105, 105);
         tft.print(oilTemperature);
-        tft.setCursor(155, 85);
+        tft.setCursor(175, 85);
         tft.print(char(248));
-        tft.setCursor(175, 105);
+        tft.setCursor(190, 105);
         tft.print("C");
       }
 
