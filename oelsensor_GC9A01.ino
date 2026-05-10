@@ -144,7 +144,7 @@ uint16_t OldOilLevelCompValues[]        = {Old_sensor_OilLevelEmpty,Old_sensor_O
 uint16_t NewOilTempCompValues[]         = {New_sensor_Temperature_30,New_sensor_Temperature_40,New_sensor_Temperature_50,New_sensor_Temperature_55,New_sensor_Temperature_60,New_sensor_Temperature_65,New_sensor_Temperature_70,New_sensor_Temperature_75,New_sensor_Temperature_80,New_sensor_Temperature_85,New_sensor_Temperature_90,New_sensor_Temperature_95,New_sensor_Temperature_100,New_sensor_Temperature_105,New_sensor_Temperature_110,New_sensor_Temperature_115};
 uint16_t NewOilLevelCompValues[]        = {New_sensor_OilLevelEmpty,New_sensor_OilLevel_10,New_sensor_OilLevel_20,New_sensor_OilLevel_30,New_sensor_OilLevel_40,New_sensor_OilLevel_50,New_sensor_OilLevel_60,New_sensor_OilLevel_70,New_sensor_OilLevel_80,New_sensor_OilLevel_90,New_sensor_OilLevelFull};
 
-#define SOFTWAREVERSION               "Y004"
+#define SOFTWAREVERSION               "Y005"
 #define EEPROMNameSpace               "my_variables"
 #define SignalInputPin                2
 #define ISRDebugTogglePin             4
@@ -378,7 +378,8 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         SerialBT.write(posResponse);
         SerialBT.write(0xF1);
         SerialBT.write(0x97);
-        for(int i=0;i<sizeof(Modulename);i++)
+        uint8_t sizeOfArr = sizeof(Modulename) / sizeof(Modulename[0]);
+        for(int i=0;i<sizeOfArr;i++)
         {
             SerialBT.write(Modulename[i]);
         }
@@ -439,9 +440,10 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         SerialBT.write(0x04); 
         uint8_t i = 0;
         uint8_t tempvar;
-        for(i=0;i<sizeof(OldOilTempCompValues);i++)
+        uint8_t sizeOfArr = sizeof(OldOilTempCompValues) / sizeof(OldOilTempCompValues[0]);
+        for(i=0;i<sizeOfArr;i++)
         {
-          tempvar = 
+
             /* As example testval =         500 == 0x01F4    */
             /* SerialBT.write(testval >> 8);         -> 0x01 */
             /* SerialBT.write(testval & 0xFF);       -> 0xF4 */
@@ -449,9 +451,7 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
           SerialBT.write(tempvar);
           tempvar = (OldOilTempCompValues[i] & 0xFF);
           SerialBT.write(tempvar);
-        }                 
-        
-        
+        }                   
       }else
       
       /* 0x22 0x06 0x05 */
@@ -463,9 +463,9 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         SerialBT.write(0x05);                  
         uint8_t i = 0;
         uint8_t tempvar;
-        for(i=0;i<sizeof(OldOilLevelCompValues);i++)
+        uint8_t sizeOfArr = sizeof(OldOilLevelCompValues) / sizeof(OldOilLevelCompValues[0]);
+        for(i=0;i<sizeOfArr;i++)
         {
-          tempvar = 
             /* As example testval =         500 == 0x01F4    */
             /* SerialBT.write(testval >> 8);         -> 0x01 */
             /* SerialBT.write(testval & 0xFF);       -> 0xF4 */
@@ -485,9 +485,9 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         SerialBT.write(0x06);                  
         uint8_t i = 0;
         uint8_t tempvar;
-        for(i=0;i<sizeof(NewOilTempCompValues);i++)
+        uint8_t sizeOfArr = sizeof(NewOilTempCompValues) / sizeof(NewOilTempCompValues[0]);
+        for(i=0;i<sizeOfArr;i++)
         {
-          tempvar = 
             /* As example testval =         500 == 0x01F4    */
             /* SerialBT.write(testval >> 8);         -> 0x01 */
             /* SerialBT.write(testval & 0xFF);       -> 0xF4 */
@@ -508,9 +508,9 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         SerialBT.write(0x07);                  
         uint8_t i = 0;
         uint8_t tempvar;
-        for(i=0;i<sizeof(NewOilLevelCompValues);i++)
+        uint8_t sizeOfArr = sizeof(NewOilLevelCompValues) / sizeof(NewOilLevelCompValues[0]);
+        for(i=0;i<sizeOfArr;i++)
         {
-          tempvar = 
             /* As example testval =         500 == 0x01F4    */
             /* SerialBT.write(testval >> 8);         -> 0x01 */
             /* SerialBT.write(testval & 0xFF);       -> 0xF4 */
@@ -1045,9 +1045,9 @@ void showOilLevelAtDisplay(uint8_t percentageOillevel,bool initflag)
 void controlOfDisplay()
 {
   //tft.fillScreen(GC9A01A_BLACK);
-  if ((startUpCounter>=40) && (startUpCounter<=1500) )
+  if ((startUpCounter>=20) && (startUpCounter<=25) )
   {
-    if(startUpCounter==40){
+    if(startUpCounter==20){
       tft.fillScreen(GC9A01A_BLACK);
       tft.setTextColor(GC9A01A_WHITE);
       startUpCounter = startUpCounter+1;
@@ -1055,7 +1055,7 @@ void controlOfDisplay()
     showOilLevelAtDisplay(oilLevelPercentage,false);
   } 
   /* short initialization sequence*/
-  if((startUpCounter>=0) && (startUpCounter<40))
+  if((startUpCounter>=0) && (startUpCounter<20))
   {  
     //tft.drawXBitmap(0, 50, audi_logo, logoWidth, logoHeight,GC9A01A_BLACK,GC9A01A_WHITE);
     //tft.drawXBitmap(0, 0, vw_logo, logoWidth, logoHeight,GC9A01A_BLUE,GC9A01A_WHITE);
@@ -1121,7 +1121,7 @@ void readEepromValues()
   OldOilTempCompValues[13] = preferences.getUShort("Old_sensor_Temperature_105",Old_sensor_Temperature_105);
   OldOilTempCompValues[14] = preferences.getUShort("Old_sensor_Temperature_110",Old_sensor_Temperature_110);
   OldOilTempCompValues[15] = preferences.getUShort("Old_sensor_Temperature_115",Old_sensor_Temperature_115);
-
+/*
   OldOilLevelCompValues[0] = preferences.getUShort("Old_sensor_OilLevelEmpty",Old_sensor_OilLevelEmpty);
   OldOilLevelCompValues[1] = preferences.getUShort("Old_sensor_OilLevel_10",Old_sensor_OilLevel_10);
   OldOilLevelCompValues[2] = preferences.getUShort("Old_sensor_OilLevel_20",Old_sensor_OilLevel_20);
@@ -1133,7 +1133,7 @@ void readEepromValues()
   OldOilLevelCompValues[8] = preferences.getUShort("Old_sensor_OilLevel_80",Old_sensor_OilLevel_80);
   OldOilLevelCompValues[9] = preferences.getUShort("Old_sensor_OilLevel_90",Old_sensor_OilLevel_90);
   OldOilLevelCompValues[10] = preferences.getUShort("Old_sensor_OilLevelFull",Old_sensor_OilLevelFull);
-
+*/
   NewOilTempCompValues[0] = preferences.getUShort("New_sensor_Temperature_30",New_sensor_Temperature_30);
   NewOilTempCompValues[1] = preferences.getUShort("New_sensor_Temperature_40",New_sensor_Temperature_40);
   NewOilTempCompValues[2] = preferences.getUShort("New_sensor_Temperature_50",New_sensor_Temperature_50);
@@ -1150,7 +1150,7 @@ void readEepromValues()
   NewOilTempCompValues[13] = preferences.getUShort("New_sensor_Temperature_105",New_sensor_Temperature_105);
   NewOilTempCompValues[14] = preferences.getUShort("New_sensor_Temperature_110",New_sensor_Temperature_110);
   NewOilTempCompValues[15] = preferences.getUShort("New_sensor_Temperature_115",New_sensor_Temperature_115);
-
+/*
   NewOilLevelCompValues[0] = preferences.getUShort("New_sensor_OilLevelEmpty",New_sensor_OilLevelEmpty);
   NewOilLevelCompValues[1] = preferences.getUShort("New_sensor_OilLevel_10",New_sensor_OilLevel_10);
   NewOilLevelCompValues[2] = preferences.getUShort("New_sensor_OilLevel_20",New_sensor_OilLevel_20);
@@ -1162,7 +1162,7 @@ void readEepromValues()
   NewOilLevelCompValues[8] = preferences.getUShort("New_sensor_OilLevel_80",New_sensor_OilLevel_80);
   NewOilLevelCompValues[9] = preferences.getUShort("New_sensor_OilLevel_90",New_sensor_OilLevel_90);
   NewOilLevelCompValues[10] = preferences.getUShort("New_sensor_OilLevelFull",New_sensor_OilLevelFull);
-
+*/
   
   brand = preferences.getUChar("Brand",BRAND_VW);
   preferences.end();
