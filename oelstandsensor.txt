@@ -654,20 +654,42 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
       /* 0x2E 0x06 0x00 0x??......*/
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x00))
       {
-        testValue_oilTemperature = receive_BT_Array[3];
-        SerialBT.write(posResponse);
-        SerialBT.write(0x06);
-        SerialBT.write(0x00); 
+        uint8_t val  = NULL;
+        val = receive_BT_Array[3];
+        if(val == NULL)
+        {
+          SerialBT.write(0x7f);
+          SerialBT.write(0x2e);
+          SerialBT.write(0x13);
+        }
+        else
+        {
+          testValue_oilTemperature = val;
+          SerialBT.write(posResponse);
+          SerialBT.write(0x06);
+          SerialBT.write(0x00); 
+        }
       }else
 
       /* This part should set the Debugvalue for the OilLevel
       /* 0x2E 0x06 0x01 0x!! 0x!!  0x!! 0x!! 0x!!......*/
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x01))
       {
-        testValue_oilLevelPercentage = receive_BT_Array[3];
-        SerialBT.write(posResponse);
-        SerialBT.write(0x06);
-        SerialBT.write(0x01); 
+        uint8_t val  = NULL;
+        val = receive_BT_Array[3];
+        if(val == NULL)
+        {
+          SerialBT.write(0x7f);
+          SerialBT.write(0x2e);
+          SerialBT.write(0x13);
+        }
+        else
+        {
+          testValue_oilLevelPercentage =val;
+          SerialBT.write(posResponse);
+          SerialBT.write(0x06);
+          SerialBT.write(0x01); 
+        }
       }else
 
 
@@ -675,180 +697,229 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
       /* 0x2E 0x06 0x04 0x!! 0x!!  0x!! 0x!! 0x!!......*/
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x04))
       {
+        uint8_t val  = NULL;
+        val = receive_BT_Array[3];
+        if(val == NULL)
+        {
+          SerialBT.write(0x7f);
+          SerialBT.write(0x2e);
+          SerialBT.write(0x13);
+        }
+        else
+        {
+          preferences.begin(EEPROMNameSpace, false); 
+          uint16_t temp = ((uint16_t) receive_BT_Array[3]<<8)|receive_BT_Array[4];
+          preferences.putShort("Old_sensor_Temperature_30",temp);
+          temp = ((uint16_t) receive_BT_Array[5]<<8)|receive_BT_Array[6];
+          preferences.putShort("Old_sensor_Temperature_40",temp);
+          temp = ((uint16_t) receive_BT_Array[7]<<8)|receive_BT_Array[8];
+          preferences.putShort("Old_sensor_Temperature_50",temp);
+          temp = ((uint16_t) receive_BT_Array[9]<<8)|receive_BT_Array[10];
+          preferences.putShort("Old_sensor_Temperature_55",temp);
+          temp = ((uint16_t) receive_BT_Array[11]<<8)|receive_BT_Array[12];
+          preferences.putShort("Old_sensor_Temperature_60",temp);
+          temp = ((uint16_t) receive_BT_Array[13]<<8)|receive_BT_Array[14];
+          preferences.putShort("Old_sensor_Temperature_65",temp);
+          temp = ((uint16_t) receive_BT_Array[15]<<8)|receive_BT_Array[16];
+          preferences.putShort("Old_sensor_Temperature_70",temp);
+          temp = ((uint16_t) receive_BT_Array[17]<<8)|receive_BT_Array[18];
+          preferences.putShort("Old_sensor_Temperature_75",temp);
+          temp = ((uint16_t) receive_BT_Array[19]<<8)|receive_BT_Array[20];
+          preferences.putShort("Old_sensor_Temperature_80",temp);
+          temp = ((uint16_t) receive_BT_Array[21]<<8)|receive_BT_Array[22];
+          preferences.putShort("Old_sensor_Temperature_85",temp);
+          temp = ((uint16_t) receive_BT_Array[23]<<8)|receive_BT_Array[24];
+          preferences.putShort("Old_sensor_Temperature_90",temp);
+          temp = ((uint16_t) receive_BT_Array[25]<<8)|receive_BT_Array[26];
+          preferences.putShort("Old_sensor_Temperature_95",temp);
+          temp = ((uint16_t) receive_BT_Array[27]<<8)|receive_BT_Array[28];
+          preferences.putShort("Old_sensor_Temperature_100",temp);
+          temp = ((uint16_t) receive_BT_Array[29]<<8)|receive_BT_Array[30];
+          preferences.putShort("Old_sensor_Temperature_105",temp);
+          temp = ((uint16_t) receive_BT_Array[31]<<8)|receive_BT_Array[32];
+          preferences.putShort("Old_sensor_Temperature_110",temp);
+          temp = ((uint16_t) receive_BT_Array[33]<<8)|receive_BT_Array[34];
+          preferences.putShort("Old_sensor_Temperature_115",temp);
+          preferences.end();
+          
 
-        preferences.begin(EEPROMNameSpace, false); 
-        uint16_t temp = ((uint16_t) receive_BT_Array[3]<<8)|receive_BT_Array[4];
-        preferences.putShort("Old_sensor_Temperature_30",temp);
-        temp = ((uint16_t) receive_BT_Array[5]<<8)|receive_BT_Array[6];
-        preferences.putShort("Old_sensor_Temperature_40",temp);
-        temp = ((uint16_t) receive_BT_Array[7]<<8)|receive_BT_Array[8];
-        preferences.putShort("Old_sensor_Temperature_50",temp);
-        temp = ((uint16_t) receive_BT_Array[9]<<8)|receive_BT_Array[10];
-        preferences.putShort("Old_sensor_Temperature_55",temp);
-        temp = ((uint16_t) receive_BT_Array[11]<<8)|receive_BT_Array[12];
-        preferences.putShort("Old_sensor_Temperature_60",temp);
-        temp = ((uint16_t) receive_BT_Array[13]<<8)|receive_BT_Array[14];
-        preferences.putShort("Old_sensor_Temperature_65",temp);
-        temp = ((uint16_t) receive_BT_Array[15]<<8)|receive_BT_Array[16];
-        preferences.putShort("Old_sensor_Temperature_70",temp);
-        temp = ((uint16_t) receive_BT_Array[17]<<8)|receive_BT_Array[18];
-        preferences.putShort("Old_sensor_Temperature_75",temp);
-        temp = ((uint16_t) receive_BT_Array[19]<<8)|receive_BT_Array[20];
-        preferences.putShort("Old_sensor_Temperature_80",temp);
-        temp = ((uint16_t) receive_BT_Array[21]<<8)|receive_BT_Array[22];
-        preferences.putShort("Old_sensor_Temperature_85",temp);
-        temp = ((uint16_t) receive_BT_Array[23]<<8)|receive_BT_Array[24];
-        preferences.putShort("Old_sensor_Temperature_90",temp);
-        temp = ((uint16_t) receive_BT_Array[25]<<8)|receive_BT_Array[26];
-        preferences.putShort("Old_sensor_Temperature_95",temp);
-        temp = ((uint16_t) receive_BT_Array[27]<<8)|receive_BT_Array[28];
-        preferences.putShort("Old_sensor_Temperature_100",temp);
-        temp = ((uint16_t) receive_BT_Array[29]<<8)|receive_BT_Array[30];
-        preferences.putShort("Old_sensor_Temperature_105",temp);
-        temp = ((uint16_t) receive_BT_Array[31]<<8)|receive_BT_Array[32];
-        preferences.putShort("Old_sensor_Temperature_110",temp);
-        temp = ((uint16_t) receive_BT_Array[33]<<8)|receive_BT_Array[34];
-        preferences.putShort("Old_sensor_Temperature_115",temp);
+          SerialBT.write(posResponse);
+          SerialBT.write(0x06);
+          SerialBT.write(0x04); 
+        }
 
-        preferences.end();
-        
 
-        SerialBT.write(posResponse);
-        SerialBT.write(0x06);
-        SerialBT.write(0x04); 
       }else
        /* This part should set the compare values for Oillevel old sensor
       /* 0x2E 0x06 0x05 0x!! 0x!!  0x!! 0x!! 0x!!......*/
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x05))
       {
+        uint8_t val  = NULL;
+        val = receive_BT_Array[3];
+        if(val == NULL)
+        {
+          SerialBT.write(0x7f);
+          SerialBT.write(0x2e);
+          SerialBT.write(0x13);
+        }
+        else
+        {
+          preferences.begin(EEPROMNameSpace, false); 
+          uint16_t temp = ((uint16_t) receive_BT_Array[3]<<8)|receive_BT_Array[4];
+          preferences.putShort("Old_sensor_OilLevelEmpty",temp);
+          temp = ((uint16_t) receive_BT_Array[5]<<8)|receive_BT_Array[6];
+          preferences.putShort("Old_sensor_OilLevel_10",temp);
+          temp = ((uint16_t) receive_BT_Array[7]<<8)|receive_BT_Array[8];
+          preferences.putShort("Old_sensor_OilLevel_20",temp);
+          temp = ((uint16_t) receive_BT_Array[9]<<8)|receive_BT_Array[10];
+          preferences.putShort("Old_sensor_OilLevel_30",temp);
+          temp = ((uint16_t) receive_BT_Array[11]<<8)|receive_BT_Array[12];
+          preferences.putShort("Old_sensor_OilLevel_40",temp);
+          temp = ((uint16_t) receive_BT_Array[13]<<8)|receive_BT_Array[14];
+          preferences.putShort("Old_sensor_OilLevel_50",temp);
+          temp = ((uint16_t) receive_BT_Array[15]<<8)|receive_BT_Array[16];
+          preferences.putShort("Old_sensor_OilLevel_60",temp);
+          temp = ((uint16_t) receive_BT_Array[17]<<8)|receive_BT_Array[18];
+          preferences.putShort("Old_sensor_OilLevel_70",temp);
+          temp = ((uint16_t) receive_BT_Array[19]<<8)|receive_BT_Array[20];
+          preferences.putShort("Old_sensor_OilLevel_80",temp);
+          temp = ((uint16_t) receive_BT_Array[21]<<8)|receive_BT_Array[22];
+          preferences.putShort("Old_sensor_OilLevel_90",temp);
+          temp = ((uint16_t) receive_BT_Array[23]<<8)|receive_BT_Array[24];
+          preferences.putShort("Old_sensor_OilLevelFull",temp);
 
-        preferences.begin(EEPROMNameSpace, false); 
-        uint16_t temp = ((uint16_t) receive_BT_Array[3]<<8)|receive_BT_Array[4];
-        preferences.putShort("Old_sensor_OilLevelEmpty",temp);
-        temp = ((uint16_t) receive_BT_Array[5]<<8)|receive_BT_Array[6];
-        preferences.putShort("Old_sensor_OilLevel_10",temp);
-        temp = ((uint16_t) receive_BT_Array[7]<<8)|receive_BT_Array[8];
-        preferences.putShort("Old_sensor_OilLevel_20",temp);
-        temp = ((uint16_t) receive_BT_Array[9]<<8)|receive_BT_Array[10];
-        preferences.putShort("Old_sensor_OilLevel_30",temp);
-        temp = ((uint16_t) receive_BT_Array[11]<<8)|receive_BT_Array[12];
-        preferences.putShort("Old_sensor_OilLevel_40",temp);
-        temp = ((uint16_t) receive_BT_Array[13]<<8)|receive_BT_Array[14];
-        preferences.putShort("Old_sensor_OilLevel_50",temp);
-        temp = ((uint16_t) receive_BT_Array[15]<<8)|receive_BT_Array[16];
-        preferences.putShort("Old_sensor_OilLevel_60",temp);
-        temp = ((uint16_t) receive_BT_Array[17]<<8)|receive_BT_Array[18];
-        preferences.putShort("Old_sensor_OilLevel_70",temp);
-        temp = ((uint16_t) receive_BT_Array[19]<<8)|receive_BT_Array[20];
-        preferences.putShort("Old_sensor_OilLevel_80",temp);
-        temp = ((uint16_t) receive_BT_Array[21]<<8)|receive_BT_Array[22];
-        preferences.putShort("Old_sensor_OilLevel_90",temp);
-        temp = ((uint16_t) receive_BT_Array[23]<<8)|receive_BT_Array[24];
-        preferences.putShort("Old_sensor_OilLevelFull",temp);
+          preferences.end();
 
-        preferences.end();
-
-        SerialBT.write(posResponse);
-        SerialBT.write(0x06);
-        SerialBT.write(0x05); 
+          SerialBT.write(posResponse);
+          SerialBT.write(0x06);
+          SerialBT.write(0x05); 
+        }
       }else
 
       /* This part should set the compare values for Oiltemperatur New sensor
       /* 0x2E 0x06 0x06 0x!! 0x!!  0x!! 0x!! 0x!!......*/
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x06))
       {
+        uint8_t val  = NULL;
+        val = receive_BT_Array[3];
+        if(val == NULL)
+        {
+          SerialBT.write(0x7f);
+          SerialBT.write(0x2e);
+          SerialBT.write(0x13);
+        }
+        else
+        {
+          preferences.begin(EEPROMNameSpace, false); 
+          uint16_t temp = ((uint16_t) receive_BT_Array[3]<<8)|receive_BT_Array[4];
+          preferences.putShort("New_sensor_Temperature_30",temp);
+          temp = ((uint16_t) receive_BT_Array[5]<<8)|receive_BT_Array[6];
+          preferences.putShort("New_sensor_Temperature_40",temp);
+          temp = ((uint16_t) receive_BT_Array[7]<<8)|receive_BT_Array[8];
+          preferences.putShort("New_sensor_Temperature_50",temp);
+          temp = ((uint16_t) receive_BT_Array[9]<<8)|receive_BT_Array[10];
+          preferences.putShort("New_sensor_Temperature_55",temp);
+          temp = ((uint16_t) receive_BT_Array[11]<<8)|receive_BT_Array[12];
+          preferences.putShort("New_sensor_Temperature_60",temp);
+          temp = ((uint16_t) receive_BT_Array[13]<<8)|receive_BT_Array[14];
+          preferences.putShort("New_sensor_Temperature_65",temp);
+          temp = ((uint16_t) receive_BT_Array[15]<<8)|receive_BT_Array[16];
+          preferences.putShort("New_sensor_Temperature_70",temp);
+          temp = ((uint16_t) receive_BT_Array[17]<<8)|receive_BT_Array[18];
+          preferences.putShort("New_sensor_Temperature_75",temp);
+          temp = ((uint16_t) receive_BT_Array[19]<<8)|receive_BT_Array[20];
+          preferences.putShort("New_sensor_Temperature_80",temp);
+          temp = ((uint16_t) receive_BT_Array[21]<<8)|receive_BT_Array[22];
+          preferences.putShort("New_sensor_Temperature_85",temp);
+          temp = ((uint16_t) receive_BT_Array[23]<<8)|receive_BT_Array[24];
+          preferences.putShort("New_sensor_Temperature_90",temp);
+          temp = ((uint16_t) receive_BT_Array[25]<<8)|receive_BT_Array[26];
+          preferences.putShort("New_sensor_Temperature_95",temp);
+          temp = ((uint16_t) receive_BT_Array[27]<<8)|receive_BT_Array[28];
+          preferences.putShort("New_sensor_Temperature_100",temp);
+          temp = ((uint16_t) receive_BT_Array[29]<<8)|receive_BT_Array[30];
+          preferences.putShort("New_sensor_Temperature_105",temp);
+          temp = ((uint16_t) receive_BT_Array[31]<<8)|receive_BT_Array[32];
+          preferences.putShort("New_sensor_Temperature_110",temp);
+          temp = ((uint16_t) receive_BT_Array[33]<<8)|receive_BT_Array[34];
+          preferences.putShort("New_sensor_Temperature_115",temp);
 
-        preferences.begin(EEPROMNameSpace, false); 
-        uint16_t temp = ((uint16_t) receive_BT_Array[3]<<8)|receive_BT_Array[4];
-        preferences.putShort("New_sensor_Temperature_30",temp);
-        temp = ((uint16_t) receive_BT_Array[5]<<8)|receive_BT_Array[6];
-        preferences.putShort("New_sensor_Temperature_40",temp);
-        temp = ((uint16_t) receive_BT_Array[7]<<8)|receive_BT_Array[8];
-        preferences.putShort("New_sensor_Temperature_50",temp);
-        temp = ((uint16_t) receive_BT_Array[9]<<8)|receive_BT_Array[10];
-        preferences.putShort("New_sensor_Temperature_55",temp);
-        temp = ((uint16_t) receive_BT_Array[11]<<8)|receive_BT_Array[12];
-        preferences.putShort("New_sensor_Temperature_60",temp);
-        temp = ((uint16_t) receive_BT_Array[13]<<8)|receive_BT_Array[14];
-        preferences.putShort("New_sensor_Temperature_65",temp);
-        temp = ((uint16_t) receive_BT_Array[15]<<8)|receive_BT_Array[16];
-        preferences.putShort("New_sensor_Temperature_70",temp);
-        temp = ((uint16_t) receive_BT_Array[17]<<8)|receive_BT_Array[18];
-        preferences.putShort("New_sensor_Temperature_75",temp);
-        temp = ((uint16_t) receive_BT_Array[19]<<8)|receive_BT_Array[20];
-        preferences.putShort("New_sensor_Temperature_80",temp);
-        temp = ((uint16_t) receive_BT_Array[21]<<8)|receive_BT_Array[22];
-        preferences.putShort("New_sensor_Temperature_85",temp);
-        temp = ((uint16_t) receive_BT_Array[23]<<8)|receive_BT_Array[24];
-        preferences.putShort("New_sensor_Temperature_90",temp);
-        temp = ((uint16_t) receive_BT_Array[25]<<8)|receive_BT_Array[26];
-        preferences.putShort("New_sensor_Temperature_95",temp);
-        temp = ((uint16_t) receive_BT_Array[27]<<8)|receive_BT_Array[28];
-        preferences.putShort("New_sensor_Temperature_100",temp);
-        temp = ((uint16_t) receive_BT_Array[29]<<8)|receive_BT_Array[30];
-        preferences.putShort("New_sensor_Temperature_105",temp);
-        temp = ((uint16_t) receive_BT_Array[31]<<8)|receive_BT_Array[32];
-        preferences.putShort("New_sensor_Temperature_110",temp);
-        temp = ((uint16_t) receive_BT_Array[33]<<8)|receive_BT_Array[34];
-        preferences.putShort("New_sensor_Temperature_115",temp);
-
-        preferences.end();
+          preferences.end();
         
-
-        SerialBT.write(posResponse);
-        SerialBT.write(0x06);
-        SerialBT.write(0x06); 
+          SerialBT.write(posResponse);
+          SerialBT.write(0x06);
+          SerialBT.write(0x06); 
+        }
       }else
 
       /* This part should set the compare values for Oillevel new sensor
       /* 0x2E 0x06 0x07 0x!! 0x!!  0x!! 0x!! 0x!!......*/
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x07))
       {
-
-        preferences.begin(EEPROMNameSpace, false); 
-        uint16_t temp = ((uint16_t) receive_BT_Array[3]<<8)|receive_BT_Array[4];
-        preferences.putShort("New_sensor_OilLevelEmpty",temp);
-        temp = ((uint16_t) receive_BT_Array[5]<<8)|receive_BT_Array[6];
-        preferences.putShort("New_sensor_OilLevel_10",temp);
-        temp = ((uint16_t) receive_BT_Array[7]<<8)|receive_BT_Array[8];
-        preferences.putShort("New_sensor_OilLevel_20",temp);
-        temp = ((uint16_t) receive_BT_Array[9]<<8)|receive_BT_Array[10];
-        preferences.putShort("New_sensor_OilLevel_30",temp);
-        temp = ((uint16_t) receive_BT_Array[11]<<8)|receive_BT_Array[12];
-        preferences.putShort("New_sensor_OilLevel_40",temp);
-        temp = ((uint16_t) receive_BT_Array[13]<<8)|receive_BT_Array[14];
-        preferences.putShort("New_sensor_OilLevel_50",temp);
-        temp = ((uint16_t) receive_BT_Array[15]<<8)|receive_BT_Array[16];
-        preferences.putShort("New_sensor_OilLevel_60",temp);
-        temp = ((uint16_t) receive_BT_Array[17]<<8)|receive_BT_Array[18];
-        preferences.putShort("New_sensor_OilLevel_70",temp);
-        temp = ((uint16_t) receive_BT_Array[19]<<8)|receive_BT_Array[20];
-        preferences.putShort("New_sensor_OilLevel_80",temp);
-        temp = ((uint16_t) receive_BT_Array[21]<<8)|receive_BT_Array[22];
-        preferences.putShort("New_sensor_OilLevel_90",temp);
-        temp = ((uint16_t) receive_BT_Array[23]<<8)|receive_BT_Array[24];
-        preferences.putShort("New_sensor_OilLevelFull",temp);
-        preferences.end();
-        
-        SerialBT.write(posResponse);
-        SerialBT.write(0x06);
-        SerialBT.write(0x07); 
+        uint8_t val  = NULL;
+        val = receive_BT_Array[3];
+        if(val == NULL)
+        {
+          SerialBT.write(0x7f);
+          SerialBT.write(0x2e);
+          SerialBT.write(0x13);
+        }
+        else
+        {
+          preferences.begin(EEPROMNameSpace, false); 
+          uint16_t temp = ((uint16_t) receive_BT_Array[3]<<8)|receive_BT_Array[4];
+          preferences.putShort("New_sensor_OilLevelEmpty",temp);
+          temp = ((uint16_t) receive_BT_Array[5]<<8)|receive_BT_Array[6];
+          preferences.putShort("New_sensor_OilLevel_10",temp);
+          temp = ((uint16_t) receive_BT_Array[7]<<8)|receive_BT_Array[8];
+          preferences.putShort("New_sensor_OilLevel_20",temp);
+          temp = ((uint16_t) receive_BT_Array[9]<<8)|receive_BT_Array[10];
+          preferences.putShort("New_sensor_OilLevel_30",temp);
+          temp = ((uint16_t) receive_BT_Array[11]<<8)|receive_BT_Array[12];
+          preferences.putShort("New_sensor_OilLevel_40",temp);
+          temp = ((uint16_t) receive_BT_Array[13]<<8)|receive_BT_Array[14];
+          preferences.putShort("New_sensor_OilLevel_50",temp);
+          temp = ((uint16_t) receive_BT_Array[15]<<8)|receive_BT_Array[16];
+          preferences.putShort("New_sensor_OilLevel_60",temp);
+          temp = ((uint16_t) receive_BT_Array[17]<<8)|receive_BT_Array[18];
+          preferences.putShort("New_sensor_OilLevel_70",temp);
+          temp = ((uint16_t) receive_BT_Array[19]<<8)|receive_BT_Array[20];
+          preferences.putShort("New_sensor_OilLevel_80",temp);
+          temp = ((uint16_t) receive_BT_Array[21]<<8)|receive_BT_Array[22];
+          preferences.putShort("New_sensor_OilLevel_90",temp);
+          temp = ((uint16_t) receive_BT_Array[23]<<8)|receive_BT_Array[24];
+          preferences.putShort("New_sensor_OilLevelFull",temp);
+          preferences.end();
+          
+          SerialBT.write(posResponse);
+          SerialBT.write(0x06);
+          SerialBT.write(0x07); 
+        }
       }
       else 
       /* This part should set brand for the startuplogo
       /* 0x2E 0x06 0x0A 0x!! */
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x0A))
       {
-
-        preferences.begin(EEPROMNameSpace, false); 
-        uint8_t temp =  (uint8_t) receive_BT_Array[3];
-        brand = temp;
-        preferences.putUChar("Brand",temp);
-        preferences.end();
-        
-        SerialBT.write(posResponse);
-        SerialBT.write(0x06);
-        SerialBT.write(0x0A); 
+        uint8_t val  = NULL;
+        val = receive_BT_Array[3];
+        if(val == NULL)
+        {
+          SerialBT.write(0x7f);
+          SerialBT.write(0x2e);
+          SerialBT.write(0x13);
+        }
+        else
+        {
+          brand = val;
+          preferences.begin(EEPROMNameSpace, false); 
+          preferences.putUChar("Brand",val);
+          preferences.end();
+          
+          SerialBT.write(posResponse);
+          SerialBT.write(0x06);
+          SerialBT.write(0x0A); 
+        }
       }
       else
       
@@ -856,11 +927,22 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
       /* 0x2E 0x06 0x0B 0x!! 0x!!  0x!! 0x!! 0x!!......*/
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x0B))
       {
-        statusOfExtraOutputPin = receive_BT_Array[3];
-        digitalWrite(OutputPin, statusOfExtraOutputPin);
-        SerialBT.write(posResponse);
-        SerialBT.write(0x06);
-        SerialBT.write(0x0B); 
+        uint8_t val  = NULL;
+        val = receive_BT_Array[3];
+        if(val == NULL)
+        {
+          SerialBT.write(0x7f);
+          SerialBT.write(0x2e);
+          SerialBT.write(0x13);
+        }
+        else
+        {
+          statusOfExtraOutputPin = val;
+          digitalWrite(OutputPin, statusOfExtraOutputPin);
+          SerialBT.write(posResponse);
+          SerialBT.write(0x06);
+          SerialBT.write(0x0B); 
+        }
       }
       else
 
@@ -870,18 +952,28 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x0C))
       {
 
-        bool temp = (bool)receive_BT_Array[3];
-        if(NewOilSensorEquipped != temp)
+        bool val = NULL;
+        val = (bool)receive_BT_Array[3];
+        if(val == NULL)
         {
-          NewOilSensorEquipped = temp;
-          preferences.begin(EEPROMNameSpace, false); 
-          preferences.putBool("NewSensorflag",temp);
-          preferences.end();
+          SerialBT.write(0x7f);
+          SerialBT.write(0x2e);
+          SerialBT.write(0x13);
         }
+        else
+        {
+          if(NewOilSensorEquipped != val)
+          {
+            NewOilSensorEquipped = val;
+            preferences.begin(EEPROMNameSpace, false); 
+            preferences.putBool("NewSensorflag",val);
+            preferences.end();
+          }
 
-        SerialBT.write(posResponse);
-        SerialBT.write(0x06);
-        SerialBT.write(0x0C); 
+          SerialBT.write(posResponse);
+          SerialBT.write(0x06);
+          SerialBT.write(0x0C); 
+        }
       }else
 
 
@@ -905,6 +997,7 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
             preferences.putUChar("session",receive_BT_Array[1]);
             preferences.end();
           }
+          
           SerialBT.write(0x50);
       }else{
         SerialBT.write(0x7F);
