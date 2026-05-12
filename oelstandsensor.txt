@@ -101,6 +101,7 @@ T1   T2   T3    T4                  T5                    T1
 #include "NRC_UDS_protocol.h"
 #include "uds_statemachine.h"
 
+
 Preferences preferences;
 BluetoothSerial SerialBT;
 
@@ -144,7 +145,7 @@ uint16_t OldOilLevelCompValues[]        = {Old_sensor_OilLevelEmpty,Old_sensor_O
 uint16_t NewOilTempCompValues[]         = {New_sensor_Temperature_30,New_sensor_Temperature_40,New_sensor_Temperature_50,New_sensor_Temperature_55,New_sensor_Temperature_60,New_sensor_Temperature_65,New_sensor_Temperature_70,New_sensor_Temperature_75,New_sensor_Temperature_80,New_sensor_Temperature_85,New_sensor_Temperature_90,New_sensor_Temperature_95,New_sensor_Temperature_100,New_sensor_Temperature_105,New_sensor_Temperature_110,New_sensor_Temperature_115};
 uint16_t NewOilLevelCompValues[]        = {New_sensor_OilLevelEmpty,New_sensor_OilLevel_10,New_sensor_OilLevel_20,New_sensor_OilLevel_30,New_sensor_OilLevel_40,New_sensor_OilLevel_50,New_sensor_OilLevel_60,New_sensor_OilLevel_70,New_sensor_OilLevel_80,New_sensor_OilLevel_90,New_sensor_OilLevelFull};
 
-#define SOFTWAREVERSION               "Y005"
+#define SOFTWAREVERSION               "Y006"
 //#define EEPROMNameSpace               "my_variables"
 #define SignalInputPin                2
 #define ISRDebugTogglePin             4
@@ -540,7 +541,7 @@ void readEepromValues()
   OldOilTempCompValues[13] = preferences.getUShort("Old_sensor_Temperature_105",Old_sensor_Temperature_105);
   OldOilTempCompValues[14] = preferences.getUShort("Old_sensor_Temperature_110",Old_sensor_Temperature_110);
   OldOilTempCompValues[15] = preferences.getUShort("Old_sensor_Temperature_115",Old_sensor_Temperature_115);
-/*
+
   OldOilLevelCompValues[0] = preferences.getUShort("Old_sensor_OilLevelEmpty",Old_sensor_OilLevelEmpty);
   OldOilLevelCompValues[1] = preferences.getUShort("Old_sensor_OilLevel_10",Old_sensor_OilLevel_10);
   OldOilLevelCompValues[2] = preferences.getUShort("Old_sensor_OilLevel_20",Old_sensor_OilLevel_20);
@@ -552,7 +553,7 @@ void readEepromValues()
   OldOilLevelCompValues[8] = preferences.getUShort("Old_sensor_OilLevel_80",Old_sensor_OilLevel_80);
   OldOilLevelCompValues[9] = preferences.getUShort("Old_sensor_OilLevel_90",Old_sensor_OilLevel_90);
   OldOilLevelCompValues[10] = preferences.getUShort("Old_sensor_OilLevelFull",Old_sensor_OilLevelFull);
-*/
+
   NewOilTempCompValues[0] = preferences.getUShort("New_sensor_Temperature_30",New_sensor_Temperature_30);
   NewOilTempCompValues[1] = preferences.getUShort("New_sensor_Temperature_40",New_sensor_Temperature_40);
   NewOilTempCompValues[2] = preferences.getUShort("New_sensor_Temperature_50",New_sensor_Temperature_50);
@@ -569,7 +570,7 @@ void readEepromValues()
   NewOilTempCompValues[13] = preferences.getUShort("New_sensor_Temperature_105",New_sensor_Temperature_105);
   NewOilTempCompValues[14] = preferences.getUShort("New_sensor_Temperature_110",New_sensor_Temperature_110);
   NewOilTempCompValues[15] = preferences.getUShort("New_sensor_Temperature_115",New_sensor_Temperature_115);
-/*
+
   NewOilLevelCompValues[0] = preferences.getUShort("New_sensor_OilLevelEmpty",New_sensor_OilLevelEmpty);
   NewOilLevelCompValues[1] = preferences.getUShort("New_sensor_OilLevel_10",New_sensor_OilLevel_10);
   NewOilLevelCompValues[2] = preferences.getUShort("New_sensor_OilLevel_20",New_sensor_OilLevel_20);
@@ -581,7 +582,7 @@ void readEepromValues()
   NewOilLevelCompValues[8] = preferences.getUShort("New_sensor_OilLevel_80",New_sensor_OilLevel_80);
   NewOilLevelCompValues[9] = preferences.getUShort("New_sensor_OilLevel_90",New_sensor_OilLevel_90);
   NewOilLevelCompValues[10] = preferences.getUShort("New_sensor_OilLevelFull",New_sensor_OilLevelFull);
-*/
+
   
   brand = preferences.getUChar("Brand",BRAND_VW);
   preferences.end();
