@@ -1,19 +1,9 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <Arduino.h>
 
-
-
 #define OilLevelLED                   13
 #define OilTemperatureLED             15
-
-
-
-
-
-
-
 
 
 bool showLevelAndTempAtLED(bool OldToggleValue, uint8_t oilLevelPercentage,uint8_t oilTemperature)
