@@ -133,7 +133,7 @@ bool TempToggle                         = false;
 bool TimeoutSensorDetected              = true;
       
 portMUX_TYPE timerMux                   = portMUX_INITIALIZER_UNLOCKED;
-char  Modulename[]                      = "OilSensor";
+String  Modulename                      =  {0,0,0,0,0, 0,0,0,0,0 ,0,0,0,0,0, 0,0,0,0,0};
 bool NewData                            = false;
 bool statusOfExtraOutputPin             = false;
 bool toggleInvertDisplayFlag            = false;
@@ -378,10 +378,17 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         SerialBT.write(posResponse);
         SerialBT.write(0xF1);
         SerialBT.write(0x97);
+
+        
+  
+        //temp.toCharArray(Modulename, leng);
+        //SerialBT.write(temp);
         uint8_t sizeOfArr = sizeof(Modulename) / sizeof(Modulename[0]);
-        for(int i=0;i<sizeOfArr;i++)
+        uint8_t i;
+        while(Modulename[i] != 0x00)
         {
-            SerialBT.write(Modulename[i]);
+          SerialBT.write(Modulename[i]);
+          i=i+1;
         }
         
       }else
@@ -616,29 +623,31 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
       if((receive_BT_Array[1]==0xF1) && (receive_BT_Array[2]==0x97))
       {
         uint8_t length_of_name = receive_BT_Array[3];
-        if((0<length_of_name) && (length_of_name<=15))
+        if((0<length_of_name) && (length_of_name<=20))
         {
-
-          char Temparr[length_of_name+1];
           uint8_t i; 
+          String tempStr;
+          Modulename =    {0,0,0,0,0, 0,0,0,0,0 ,0,0,0,0,0, 0,0,0,0,0};
           for (i=0;i<length_of_name;i++)
           {
-            Temparr[i] =  (char) receive_BT_Array[4+i];
+            //Modulename[i] =  (char) receive_BT_Array[4+i];
+            tempStr.concat((char) receive_BT_Array[4+i]);
+            Modulename[i] = receive_BT_Array[4+i];
           }
-          Temparr[length_of_name]= 0x00;
-
+      
+         /*  
           for (i=0;i<length_of_name;i++)
           {
-            Modulename[i] =  (char) Temparr[i];
+            Modulename[i] = Temparr[i];
           }
-          
-    
+          */
+       
           preferences.begin(EEPROMNameSpace, false); 
-          preferences.putString("Modulename",Temparr);
+          preferences.putString("Modulename",tempStr);
           preferences.end();
-
-          SerialBT.begin(Modulename);
-
+          //Modulename =  Temparray;
+          SerialBT.begin(tempStr);
+         // Modulename=Temparr;
           SerialBT.write(posResponse);
           SerialBT.write(0xF1);
           SerialBT.write(0x97); 
@@ -1186,18 +1195,24 @@ void readEepromValues()
   session               = preferences.getUChar("session",UDS_Session_Control_Default_Session);
   NewOilSensorEquipped  = preferences.getBool("NewSensorflag",false);
 
-  String temp;
+  
   uint8_t leng;
+  String temp;
  /*
   temp = preferences.getString("SW_Version","1234");
   leng = temp.length() +1;
   temp.toCharArray(SoftwareVersion, leng);
   */
 
-  temp = preferences.getString("Modulename","Sensor");
-  leng = temp.length() +1;
-  temp.toCharArray(Modulename, leng);
-  
+    
+     Modulename =  preferences.getString("Modulename","1111");
+
+      /*
+        temp.toCharArray(Modulename, leng);
+        SerialBT.write(temp);
+        uint8_t sizeOfArr = sizeof(Modulename) / sizeof(Modulename[0]);
+      */
+
   OldOilTempCompValues[0] = preferences.getUShort("Old_sensor_Temperature_30",Old_sensor_Temperature_30);
   OldOilTempCompValues[1] = preferences.getUShort("Old_sensor_Temperature_40",Old_sensor_Temperature_40);
   OldOilTempCompValues[2] = preferences.getUShort("Old_sensor_Temperature_50",Old_sensor_Temperature_50);
