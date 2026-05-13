@@ -76,58 +76,72 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         
       }else
       
-      /* 0x22 0x06 0x00 */
-      /* This part should get the Debugvalue for the OilTemperature */
+      /* This part should read the coding
+      /* 0x22 0x06 0x00 ......*/
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x00))
       {
-        BUS_output(posResponse);
-        BUS_output(0x06);
-        BUS_output(0x00);                  
-        BUS_output(testValue_oilTemperature);
-        
+          BUS_output(posResponse);
+          BUS_output(0x06);
+          BUS_output(0x00); 
+
       }else
 
+
+
+
+
       /* 0x22 0x06 0x01 */
-       /* This part should get the Debugvalue for the OilLevel */
+      /* This part should get the Debugvalue for the OilTemperature */
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x01))
       {
         BUS_output(posResponse);
         BUS_output(0x06);
         BUS_output(0x01);                  
-        BUS_output(testValue_oilLevelPercentage);
+        BUS_output(testValue_oilTemperature);
         
       }else
-      
-      
+
       /* 0x22 0x06 0x02 */
-      /* Returns the OilTemperature  in Degree Celsius which is used by the SW*/
+       /* This part should get the Debugvalue for the OilLevel */
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x02))
       {
         BUS_output(posResponse);
         BUS_output(0x06);
         BUS_output(0x02);                  
-        BUS_output(oilTemperature);
+        BUS_output(testValue_oilLevelPercentage);
         
       }else
       
+      
       /* 0x22 0x06 0x03 */
-      /* Returns the Oillevel in percent which is used by the SW*/
+      /* Returns the OilTemperature  in Degree Celsius which is used by the SW*/
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x03))
       {
         BUS_output(posResponse);
         BUS_output(0x06);
         BUS_output(0x03);                  
-        BUS_output(oilLevelPercentage);
+        BUS_output(oilTemperature);
         
       }else
       
       /* 0x22 0x06 0x04 */
-      /* get Oiltemperature compare values for OldSensor */
+      /* Returns the Oillevel in percent which is used by the SW*/
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x04))
       {
         BUS_output(posResponse);
         BUS_output(0x06);
-        BUS_output(0x04); 
+        BUS_output(0x04);                  
+        BUS_output(oilLevelPercentage);
+        
+      }else
+      
+      /* 0x22 0x06 0x05 */
+      /* get Oiltemperature compare values for OldSensor */
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x05))
+      {
+        BUS_output(posResponse);
+        BUS_output(0x06);
+        BUS_output(0x05); 
         uint8_t i = 0;
         uint8_t tempvar;
         uint8_t sizeOfArr = sizeof(OldOilTempCompValues) / sizeof(OldOilTempCompValues[0]);
@@ -144,13 +158,13 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         }                   
       }else
       
-      /* 0x22 0x06 0x05 */
+      /* 0x22 0x06 0x06 */
       /* get Oillevel compare values for OldSensor*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x05))
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x06))
       {
         BUS_output(posResponse);
         BUS_output(0x06);
-        BUS_output(0x05);                  
+        BUS_output(0x06);                  
         uint8_t i = 0;
         uint8_t tempvar;
         uint8_t sizeOfArr = sizeof(OldOilLevelCompValues) / sizeof(OldOilLevelCompValues[0]);
@@ -166,13 +180,13 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         } 
         
       }else
-      /* 0x22 0x06 0x06 */
+      /* 0x22 0x06 0x07 */
       /* get Oiltemperature compare values for NewSensor */
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x06))
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x07))
       {
         BUS_output(posResponse);
         BUS_output(0x06);
-        BUS_output(0x06);                  
+        BUS_output(0x07);                  
         uint8_t i = 0;
         uint8_t tempvar;
         uint8_t sizeOfArr = sizeof(NewOilTempCompValues) / sizeof(NewOilTempCompValues[0]);
@@ -189,13 +203,13 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         
       }else
 
-      /* 0x22 0x06 0x07 */
+      /* 0x22 0x06 0x08 */
       /* get OilLevel compare values for NewSensor */
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x07))
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x08))
       {
         BUS_output(posResponse);
         BUS_output(0x06);
-        BUS_output(0x07);                  
+        BUS_output(0x08);                  
         uint8_t i = 0;
         uint8_t tempvar;
         uint8_t sizeOfArr = sizeof(NewOilLevelCompValues) / sizeof(NewOilLevelCompValues[0]);
@@ -307,9 +321,20 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
       }
       else
 
-      /* This part should set the Debugvalue for the OilTemperature
+      /* This part should set the coding
       /* 0x2E 0x06 0x00 0x??......*/
       if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x00))
+      {
+          BUS_output(posResponse);
+          BUS_output(0x06);
+          BUS_output(0x00); 
+
+      }else
+
+
+      /* This part should set the Debugvalue for the OilTemperature
+      /* 0x2E 0x06 0x01 0x??......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x01))
       {
         uint8_t val  = NULL;
         val = receive_BT_Array[3];
@@ -324,13 +349,13 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
           testValue_oilTemperature = val;
           BUS_output(posResponse);
           BUS_output(0x06);
-          BUS_output(0x00); 
+          BUS_output(0x01); 
         }
       }else
 
       /* This part should set the Debugvalue for the OilLevel
-      /* 0x2E 0x06 0x01 0x!! 0x!!  0x!! 0x!! 0x!!......*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x01))
+      /* 0x2E 0x06 0x02 0x!! 0x!!  0x!! 0x!! 0x!!......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x02))
       {
         uint8_t val  = NULL;
         val = receive_BT_Array[3];
@@ -345,14 +370,14 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
           testValue_oilLevelPercentage =val;
           BUS_output(posResponse);
           BUS_output(0x06);
-          BUS_output(0x01); 
+          BUS_output(0x02); 
         }
       }else
 
 
       /* This part should set the compare values for OilTemperature of old Sensor
-      /* 0x2E 0x06 0x04 0x!! 0x!!  0x!! 0x!! 0x!!......*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x04))
+      /* 0x2E 0x06 0x05 0x!! 0x!!  0x!! 0x!! 0x!!......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x05))
       {
         uint8_t val  = NULL;
         val = receive_BT_Array[3];
@@ -402,14 +427,14 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
 
           BUS_output(posResponse);
           BUS_output(0x06);
-          BUS_output(0x04); 
+          BUS_output(0x05); 
         }
 
 
       }else
        /* This part should set the compare values for Oillevel old sensor
-      /* 0x2E 0x06 0x05 0x!! 0x!!  0x!! 0x!! 0x!!......*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x05))
+      /* 0x2E 0x06 0x06 0x!! 0x!!  0x!! 0x!! 0x!!......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x06))
       {
         uint8_t val  = NULL;
         val = receive_BT_Array[3];
@@ -449,13 +474,13 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
 
           BUS_output(posResponse);
           BUS_output(0x06);
-          BUS_output(0x05); 
+          BUS_output(0x06); 
         }
       }else
 
       /* This part should set the compare values for Oiltemperatur New sensor
-      /* 0x2E 0x06 0x06 0x!! 0x!!  0x!! 0x!! 0x!!......*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x06))
+      /* 0x2E 0x06 0x07 0x!! 0x!!  0x!! 0x!! 0x!!......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x07))
       {
         uint8_t val  = NULL;
         val = receive_BT_Array[3];
@@ -505,13 +530,13 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         
           BUS_output(posResponse);
           BUS_output(0x06);
-          BUS_output(0x06); 
+          BUS_output(0x07); 
         }
       }else
 
       /* This part should set the compare values for Oillevel new sensor
-      /* 0x2E 0x06 0x07 0x!! 0x!!  0x!! 0x!! 0x!!......*/
-      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x07))
+      /* 0x2E 0x06 0x08 0x!! 0x!!  0x!! 0x!! 0x!!......*/
+      if((receive_BT_Array[1]==0x06) && (receive_BT_Array[2]==0x08))
       {
         uint8_t val  = NULL;
         val = receive_BT_Array[3];
@@ -550,7 +575,7 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
           
           BUS_output(posResponse);
           BUS_output(0x06);
-          BUS_output(0x07); 
+          BUS_output(0x08); 
         }
       }
       else 
