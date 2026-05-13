@@ -4,6 +4,7 @@
 
 /*
 created by tool https://www.online-utility.org/image/convert/to/XBM
+/* data were removed due to copyright*/
 */
 
 static uint8_t audi_alt_1[] = {
