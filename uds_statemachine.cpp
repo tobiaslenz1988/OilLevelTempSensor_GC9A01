@@ -54,6 +54,25 @@ void analyse_BT_Protocol(uint8_t receive_BT_Array[])
         BUS_output(session);
       }else
 
+
+      /* 0x22 0xF1 0x8C*/
+      /* Get actual Sesion */
+      if((receive_BT_Array[1]==0xF1) && (receive_BT_Array[2]==0x8C))
+      {
+        BUS_output(posResponse);
+        BUS_output(0xF1);
+        BUS_output(0x8C);
+      }else
+
+
+
+
+
+
+
+
+
+
       /* 0x22 0xF1 0x97 */
       /* get Systemname */
       if((receive_BT_Array[1]==0xF1) && (receive_BT_Array[2]==0x97))
